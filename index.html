@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div>
+        <form>
+            <fieldset>
+                <legend>Bejelentkezés</legend>
+                <div class="formgroup">
+                    <label for="username">Felhasználónév</label>
+                    <input name="username" id="username" type="text" onchange="loginFigyel(this.form)">
+                </div>
+                <div class="formgroup">
+                    <label for="password">Jelszó</label>
+                    <div>
+                        <input type="password" name="password" id="password">
+                        <input id="showPass" name="showPass" type="button" value="Megnéz" onclick="showPassword(this.form)">
+                    </div>
+                    
+                </div>
+                <input type="button" value="Bejelentkezés" onclick="loginBe(this.form)">
+                <div class="formgroup">
+                    <label for="birthdate">Születési dátum</label>
+                    <input type="date" name="birthdate" id="birthdate" onchange="calcAge(this.form)">
+                </div>
+            </fieldset>
+            <output id="output">
+
+            </output>
+            <br>
+            <output id="agedisp">
+
+            </output>
+        </form>
+    </div>
+    <script>
+        function loginBe(form) {
+            form.password.style.backgroundColor = (form.password.value != "alma") ? "red" : "green";
+            document.getElementById("output").innerHTML = `Felasználónév: ${form.username.value} <br> Jelszó: ${form.password.value}`
+        }
+        function loginFigyel(form) {
+            form.username.style.borderColor = (username.value.length < 10) ? "yellow" : "lightgray" 
+        }
+        function showPassword(form) {
+            form.password.type = (form.password.type == "password") ? "text" : "password";
+        }
+        function calcAge(form) {
+            let currentDateObj = new Date();
+            //let userYearObj = new Date(form.birthdate.value)
+            let userYear = parseInt(form.birthdate.value.slice(0,4))
+            let age = currentDateObj.getFullYear() - userYear //userYearObj.getFullYear();
+            document.getElementById("agedisp").innerHTML = `${age} ${(age < 18) ? "(kiskorú)" : "(felnőtt)"}`
+        }
+    </script>
+</body>
+</html>

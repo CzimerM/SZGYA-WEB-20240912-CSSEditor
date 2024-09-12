@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #minta {
+            left: 0;
+            width: 200px;
+            height: 200px;
+            border: 4px solid gray;
+            background-color: #fff;
+            text-align: center;
+            font-weight: bold;
+            line-height: 200px;
+            font-size: larger;
+            position: relative;
+            box-sizing: border-box;
+            margin: 0;
+        }
+
+        #minta div {
+            border: 1px solid black;
+            position: absolute;
+            transition: transform 1s;
+        }
+
+        #fej {
+            left: 75px;
+            width: 40px;
+            height: 40px;
+            top: 10px;
+            transform-origin: bottom;
+        }
+        #test {
+            left: 35px;
+            width: 120px;
+            height: 80px;
+            top: 51px;
+        }
+
+        #bkar {
+            height: 80px;
+            left: 16px;
+            top: 66px;
+            width: 18px;
+            transform-origin: top right;
+        }
+        
+        #jkar {
+            height: 80px;
+            right: 16px;
+            top: 66px;
+            width: 18px;
+            transform-origin: top left;
+        }
+
+        #blab {
+            width: 20px;
+            height: 20px;
+            top: 132px;
+            left: 65px;
+            border-radius: 50% 50% 0 0;
+        }
+
+        #jlab {
+            width: 20px;
+            height: 20px;
+            top: 132px;
+            right: 65px;
+            border-radius: 50% 50% 0 0;
+        }
+
+        #bszem {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: relative;
+            left: 5px;
+            top: 10px;
+        }
+        #jszem {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: relative;
+            right: 5px;
+            top: 10px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+        }
+
+        /* .container>div {
+            border: 1px dotted black;
+        } */
+
+        .bal {
+            position: relative;
+        }
+
+        .jobb {
+            background-color: lightgray;
+        }
+    </style>
+        <style id="inlineCSS"></style>
+    <script>
+        var mintaElem = null;
+        var mintaForm = null;
+        var mintaTimer = null;
+        var mintaX = 0;
+        var mintaDeg = 0;
+        var mintaDegInc = 1;
+        var mintaIrany = 1;
+        var mintaSizeInc = 1;
+        var mintaSize = null;
+        var melyikElem = null;
+
+        const miniCss = {
+            elemek: {
+                // "h1": null,
+                // "p": null,
+                // "mark": null
+                "fej": null,
+                "test": null,
+                "bkar": null,
+                "jkar": null,
+                "blab": null,
+                "jlab:": null
+            },
+            beolvas: function () {
+                document.title = `${melyikElem.value} beolvas`;
+                mintaForm.reset();
+                if (this.elemek[melyikElem.value]) 
+                    for (const e of this.elemek[melyikElem.value])
+                    {
+                        let cssPropVal = e.split(":");
+                        mintaForm[cssPropVal[0]].value = cssPropVal[1];
+                    }
+                mintaGenerate(mintaForm);
+            },
+            ment: function () {
+                document.title = `${melyikElem.value} ment`;
+                this.elemek[melyikElem.value] = [];
+                if (mintaElem) for (const fe of mintaForm) if (fe.checked) this.elemek[melyikElem.value].push(`${fe.name}:${fe.value}`);
+            },
+            frissit: function () {
+                document.title = `${melyikElem.value} frissít`;
+                let inlineStyle = document.getElementById("inlineCSS");
+                inlineStyle.innerHTML = "";
+                for (let [k,v] of Object.entries(this.elemek))
+                {
+                    if (v) inlineStyle.innerHTML += `#${k} {${v.join(";")}}\n`
+                }
+            }
+        }
+
+        function mintaMozog() {
+            //mozgás
+            if (mintaX < 0 || mintaX >= mintaElem.parentElement.clientWidth - mintaElem.offsetWidth) mintaIrany *= -1;
+            mintaX += mintaIrany;
+
+            //beec féle guruló
+            // mintaElem.style.transform = `rotate(${mintaX}deg)`
+            //forgás
+            if (mintaDeg < 0 || mintaDeg >= 180) mintaDegInc *= -1;
+            mintaDeg += mintaDegInc;
+            mintaElem.style.transform = `rotate(${mintaDeg}deg)`
+
+            //méret
+            // if (mintaSize < 150 || mintaSize >= 200) mintaSizeInc *= -1;
+            // mintaSize += mintaSizeInc;
+            // mintaElem.style.width = `${mintaSize}px`;
+            // mintaElem.style.height = `${mintaSize}px`;
+            // mintaElem.style.lineHeight = `${mintaSize}px`;
+
+            mintaElem.style.left = `${mintaX}px`;
+            //mintaElem.innerHTML = mintaX;
+        }
+        function mintaGenerate(form) {
+            // let formData = new FormData(form)
+            // for (let [key, value] of formData) {
+            //     mintaElem.style[key] = value;
+            // }
+            for (elem of form.elements) {
+                //console.log(elem.name.split("-").map((x, i) => i == 0 ? x : x[0].toUpperCase() + x.slice(1)).join(""));
+                let robotElem = document.getElementById(melyikElem.value);
+                if (elem.type.toUpperCase() != "RADIO" || elem.checked) robotElem.style[elem.name.split("-").map((x, i) => i == 0 ? x : x[0].toUpperCase() + x.slice(1)).join("")] = elem.value;
+            }
+            miniCss.ment();
+        }
+
+        function frissit() {
+
+        }
+        window.onload = function (e) {
+            mintaElem = document.getElementById("minta");
+            mintaForm = document.getElementById("mintaForm");
+            melyikElem = document.getElementById("melyikElem");
+            mintaGenerate(mintaForm);
+            mintaSize = mintaElem.offsetWidth;
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="bal">
+            <figure id="minta" onclick="if (!mintaTimer) mintaTimer = setInterval(mintaMozog,25)">
+                <!-- szöveg -->
+                <div id="fej">
+                    <div id="bszem"></div>
+                    <div id="jszem"></div>
+                </div>
+                <div id="test"></div>
+                <div id="bkar"></div>
+                <div id="jkar"></div>
+                <div id="blab"></div>
+                <div id="jlab"></div>
+            </figure>
+        </div>
+        <div class="jobb">
+            <select id="melyikElem" onchange="miniCss.beolvas()">
+                <!-- <option value="h1">H1</option>
+                <option value="p">P</option>
+                <option value="mark">MARK</option> -->
+                <option value="fej">fej</option>
+                <option value="test">test</option>
+                <option value="bkar">bal kar</option>
+                <option value="jkar">jobb kar</option>
+                <option value="blab">bal láb</option>
+                <option value="jlab">jobb láb</option>
+            </select>
+            <button onclick="miniCss.frissit()">CSS frissít</button>
+            <form onchange="mintaGenerate(this)" name="mintaEditor" id="mintaForm">
+                <fieldset>
+                    <legend>Háttér</legend>
+                    <label for="rad-bg-gray">gray</label>
+                    <input type="radio" name="background-color" value="gray" id="rad-bg-gray">
+                    <label for="rad-bg-red">red</label>
+                    <input type="radio" name="background-color" value="red" id="rad-bg-red">
+                    <label for="rad-bg-blue">blue</label>
+                    <input type="radio" name="background-color" value="blue" id="rad-bg-blue">
+                    <!-- <select name="background-color" id="hatter">
+                        <option value="gray">szürke</option>
+                        <option value="red">piros</option>
+                        <option value="blue">kék</option>
+                    </select> -->
+                </fieldset>
+                <fieldset>
+                    <legend>Keretszín</legend>
+                    <label for="rad-border-gray">gray</label>
+                    <input type="radio" name="border-color" value="gray" id="rad-border-gray">
+                    <label for="rad-border-red">red</label>
+                    <input type="radio" name="border-color" value="red" id="rad-border-red">
+                    <label for="rad-border-blue">blue</label>
+                    <input type="radio" name="border-color" value="blue" id="rad-border-blue">
+                    <!-- <select name="border-color" id="keret">
+                        <option value="gray">szürke</option>
+                        <option value="red">piros</option>
+                        <option value="blue">kék</option>
+                    </select> -->
+                </fieldset>
+                <fieldset>
+                    <legend>Keretvonal</legend>
+                    <label for="rad-border-solid">_____</label>
+                    <input type="radio" name="border-style" id="rad-border-solid" value="solid">
+                    <label for="rad-border-dashed">-----</label>
+                    <input type="radio" name="border-style" id="rad-border-dashed" value="dashed">
+                    <label for="rad-border-dotted">.....</label>
+                    <input type="radio" name="border-style" id="rad-border-dotted" value="dotted">
+                </fieldset>
+                <fieldset>
+                    <legend>Szövegszín</legend>
+                    <label for="rad-text-gray">gray</label>
+                    <input type="radio" name="color" value="gray" id="rad-text-gray">
+                    <label for="rad-text-red">red</label>
+                    <input type="radio" name="color" value="red" id="rad-text-red">
+                    <label for="rad-text-blue">blue</label>
+                    <input type="radio" name="color" value="blue" id="rad-text-blue">
+                </fieldset>
+                <fieldset>
+                    <legend>Sarkítás</legend>
+                    <label for="rad-borderrad-none">nincs</label>
+                    <input type="radio" name="border-radius" value="none" id="rad-borderrad-none">
+                    <label for="rad-borderrad-25">25%</label>
+                    <input type="radio" name="border-radius" value="25%" id="rad-borderrad-25">
+                    <label for="rad-borderrad-50">50%</label>
+                    <input type="radio" name="border-radius" value="50%" id="rad-borderrad-50">
+                </fieldset>
+                <fieldset>
+                    <legend>Forgatás</legend>
+                    <label for="rad-transform-none">nincs</label>
+                    <input type="radio" name="transform" value="none" id="rad-transform-none">
+                    <label for="rad-transform-33deg">33 deg</label>
+                    <input type="radio" name="transform" value="rotate(33deg)" id="rad-transform-33deg">
+                    <label for="rad-transform-45deg">45 deg</label>
+                    <input type="radio" name="transform" value="rotate(45deg)" id="rad-transform-45deg">
+                    <label for="rad-transform-neg45deg">-45 deg</label>
+                    <input type="radio" name="transform" value="rotate(-45deg)" id="rad-transform-neg45deg">
+                </fieldset>
+            </form>
+        </div>
+    </div>
+    <div>
+        <h1>CSS Editor</h1>
+        <p>Ez egy bekezdés, ez pedig <mark>kiemelt szöveg</mark> a mondatban.</p>
+    </div>
+</body>
+
+</html>
